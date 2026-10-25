@@ -45,7 +45,7 @@ def utc():
 
 def write_csv(path, rows, fields):
     with path.open('w', encoding='utf-8', newline='') as f:
-        w = csv.DictWriter(f, fields, extrasaction='raise')
+        w = csv.DictWriter(f, fields, extrasaction='raise', lineterminator='\n')
         w.writeheader()
         w.writerows(rows)
 
