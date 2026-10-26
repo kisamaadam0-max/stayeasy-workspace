@@ -48,6 +48,7 @@ A skill is a step-by-step procedure in `skills/<name>/SKILL.md`. When a request 
 | Skill | Use when |
 | --- | --- |
 | `skills/stayeasy-new-client/` | Adam has a new client to set up |
+| `skills/weekly-price-check/` | Weekly price check for a property: own prices across sites (Codex) and competitor prices (Claude) |
 
 ## Map
 
