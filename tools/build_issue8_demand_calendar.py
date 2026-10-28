@@ -113,12 +113,28 @@ for day,name in [('2026-11-26','Thanksgiving'),('2026-12-25','Christmas'),('2027
 LE='https://www.leicester.gov.uk/schools-and-education/term-dates'
 for a,b,name in [('2026-12-21','2027-01-01','Christmas'),('2027-02-15','2027-02-19','February half-term'),('2027-03-22','2027-04-02','Easter'),('2027-05-31','2027-06-04','May half-term')]:
     add(a,b,name+' school break','UK (England)','Leicester City maintained/voluntary-controlled schools',LE)
+
+NY='https://portal.311.nyc.gov/article/?kanumber=KA-02522'
+for a,b,event in [('2026-11-26','2026-11-27','Thanksgiving school break'),('2026-12-24','2027-01-01','Christmas school break'),('2027-04-22','2027-04-30','Spring school break')]:
+    add(a,b,event,'USA','New York: NYC public schools only',NY)
+TX='https://www.austinisd.org/calendar/events/2027/03/15/spring-break'
+add('2027-03-15','2027-03-19','Spring school break','USA','Texas: Austin ISD only',TX)
+add('2026-11-23','2026-11-27','Thanksgiving week / Fall Break','USA','Texas: Austin ISD only','https://www.austinisd.org/calendar/events/2026/11/23/fall-break')
+add('2027-03-15','2027-04-30','Spring school break range','USA','Texas Austin + New York NYC sample',TX+' | '+NY,notes='range: sampled districts in two states; not statewide calendars, not a typical or exhaustive nationwide window; dates between endpoints are not holidays everywhere')
+CAT='https://web.gencat.cat/ca/ciutadania/educacio-formacio/calendari-escolar-catalunya'
+for a,b,event in [('2026-12-22','2027-01-07','Christmas vacation'),('2027-03-20','2027-03-29','Easter vacation')]:
+    add(a,b,event,'Spain','Catalonia',CAT,notes='Official inclusive boundaries')
+LO='https://www.regione.lombardia.it/istruzione-formazione-e-lavoro/formazione-professionale/calendario-scolastico-2026-2027'
+add('2026-12-23','2027-01-05','Christmas vacation','Italy','Lombardy',LO,notes='December 23-31 and January 2-5 school vacation; January 1 national holiday also listed in same source; combined continuous school closure')
+add('2027-02-07','2027-02-09','Rio Carnival competitive parades','Brazil','Rio de Janeiro event, not national school closure','https://liesa.org.br/noticias/260309-vendas-passaporte.html','festival',notes='Official organizer published 7, 8 and 9 February 2027; no national vacation period inferred')
+add('2026-12-21','2027-01-01','Summer-period school recess (limited calendar)','Argentina','Neuquen rural September-May / February-December calendars only','https://www.neuqueninforma.gob.ar/noticias/2026/01/08/254468-se-aprobo-el-calendario-escolar-2026-2027',notes='Explicit recess only; does not establish the full December-February summer vacation for ordinary March-December schools')
+
 # Summary ranges only for comparable named periods with dated components.
 # They describe the sampled regions, never nationwide closures.
-for market in ['UK (England)','Germany','Netherlands','Belgium']:
+for market in ['UK (England)','Germany','Netherlands','Belgium','Spain','Italy']:
     periods={}
     for r in list(rows):
-        if r['market']==market and r['type']=='school holiday' and 'school break' in r['event'] and r['date_from']!='not_returned' and r['date_to']!='not_returned':
+        if r['market']==market and r['type']=='school holiday' and ('school break' in r['event'] or 'vacation' in r['event']) and r['date_from']!='not_returned' and r['date_to']!='not_returned':
             periods.setdefault(r['event'],[]).append(r)
     for event,parts in periods.items():
         if len({r['region'] for r in parts})<2:continue
