@@ -176,7 +176,13 @@ def run(args):
             print('Issue calls:',len(prior)+1,'of 30;',parameters['check_in_date'],'cached:',row['cached'],flush=True)
             return saved
         for day,nights in STAYS:
-            parameters=base_params(day,nights);first=fetch(parameters)
+            parameters=base_params(day,nights)
+            import price_parity as shared
+            failed=[r for r in shared.read_csv(args.ledger) if r['run_id']=='issue-8' and r['status']=='http_error' and json.loads(r['parameters'])==parameters]
+            if failed:
+                print('Previously failed date left uncollected:',day,flush=True)
+                continue
+            first=fetch(parameters)
             nearby=sum(candidate(h) for h in first['data'].get('properties',[]))
             next_token=first['data'].get('serpapi_pagination',{}).get('next_page_token')
             if nearby<20 and next_token:fetch(dict(parameters,next_page_token=next_token))

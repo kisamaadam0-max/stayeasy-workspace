@@ -84,11 +84,9 @@ for day,name in [('2026-11-02','All Souls school closure'),('2026-11-11','Armist
     add(day,day,name,'Belgium','French Community primary/secondary',FWB,status='provisional',notes='First-reading announcement only; final text not verified')
 
 MA='https://maroc.ma/fr/le-maroc/fetes-nationales-et-religieuses'
-for day,name in [('2026-11-06','Green March'),('2026-11-18','Independence Day'),('2027-01-01','New Year'),('2027-01-11','Independence Manifesto'),('2027-01-14','Amazigh New Year'),('2027-05-01','Labour Day'),('2027-07-30','Throne Day'),('2027-08-14','Oued Eddahab'),('2027-08-20','Revolution of King and People'),('2027-08-21','Youth Day'),('2027-10-31','Unity Day / Aid Al Wahda')]:
-    add(day,day,name,'Morocco (domestic)','National',MA,'public holiday',notes='Fixed annual Gregorian date listed on official portal')
-for event,hijri in [('Eid al-Fitr 2027','1 Shawwal'),('Eid al-Adha 2027','10 Dhu al-Hijjah'),('Islamic New Year 2027','1 Muharram'),('Mawlid 2027','12 Rabi al-Awwal')]:
-    add('not_returned','not_returned',event,'Morocco (domestic)','National',MA,'religious','provisional',notes='Official portal gives '+hijri+' only; 2027 Gregorian date not published in inspected source; moon-sighting dependent; no conversion estimated')
-add('not_returned','not_returned','Ramadan 2027','Morocco (domestic)','National','https://www.habous.gov.ma/آخر-المقالات','religious','provisional',notes='No 2027 Gregorian start/end located in official ministry announcements; do not extrapolate lunar dates')
+for event,hijri in [('Eid al-Fitr 2027','1 Shawwal'),('Eid al-Adha 2027','10 Dhu al-Hijjah')]:
+    add('not_returned','not_returned',event,'Morocco (context only)','National',MA,'religious','provisional',notes='Official portal gives '+hijri+' only; 2027 Gregorian date not published in inspected source; moon-sighting dependent; no conversion estimated')
+add('not_returned','not_returned','Ramadan 2027','Morocco (context only)','National','https://www.habous.gov.ma/آخر-المقالات','religious','provisional',notes='No 2027 Gregorian start/end located in official ministry announcements; do not extrapolate lunar dates')
 
 for a,b,event,kind,url in [('2026-11-20','2026-11-28','Marrakech International Film Festival','festival','https://marrakech-festival.com/en/home/'),('2027-01-29','2027-01-30','Marrakech Marathon village','sport','https://www.marathonmarrakech.ma/'),('2027-01-31','2027-01-31','Marrakech International Marathon','sport','https://www.marathonmarrakech.ma/'),('2027-04-26','2027-04-28','GITEX Africa','trade fair','https://gitexafrica.com/who-attends')]:
     add(a,b,event,'International / Morocco','Marrakech',url,kind,notes='Published organizer dates only; no attendance or demand impact inferred')
@@ -96,6 +94,35 @@ for a,b,event,kind,url in [('2026-11-20','2026-11-28','Marrakech International F
 FRBH='https://www.service-public.gouv.fr/particuliers/vosdroits/F2405'
 for day,name in [('2027-01-01','New Year'),('2027-03-29','Easter Monday'),('2027-05-01','Labour Day'),('2027-05-06','Ascension'),('2027-05-08','Victory Day'),('2027-05-17','Whit Monday'),('2027-07-14','National Day'),('2027-08-15','Assumption')]:
     add(day,day,name,'France','Metropolitan general case',FRBH,'public holiday')
+
+
+
+# Scope amendment on issue #8: public official sources only; no national inference.
+CA='https://www.ontario.ca/page/school-year-calendars'
+add('2027-03-15','2027-03-19','March break','Canada','Ontario ministry framework',CA)
+add('2026-12-21','2027-01-01','Christmas school break','Canada','Ontario ministry framework',CA)
+BC='https://westvancouverschools.ca/annual-school-calendars/'
+add('2027-03-15','2027-03-29','March break (including Easter)','Canada','British Columbia: West Vancouver district only',BC,notes='District calendar, not province-wide')
+add('2027-03-15','2027-03-29','March break range','Canada','Ontario + BC West Vancouver sample',CA+' | '+BC,notes='range: earliest start/latest end across inspected calendars; not a complete provincial census or continuous nationwide closure')
+BR='https://www.ribeiraopreto.sp.gov.br/portal/noticia/educacao-municipal-divulga-calendario-escolar-2027'
+add('2027-01-04','2027-02-02','Summer school holidays','Brazil','Ribeirao Preto municipal network, Sao Paulo',BR,notes='Municipal scope only; not national summer dates')
+add('2027-02-10','2027-02-10','Ash Wednesday school closure','Brazil','Ribeirao Preto municipal network, Sao Paulo',BR)
+US='https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/'
+for day,name in [('2026-11-26','Thanksgiving'),('2026-12-25','Christmas'),('2027-01-01','New Year')]:
+    add(day,day,name,'USA','Federal employees',US,'public holiday',notes='Federal holiday only; does not establish school vacation or a full Thanksgiving week')
+LE='https://www.leicester.gov.uk/schools-and-education/term-dates'
+for a,b,name in [('2026-12-21','2027-01-01','Christmas'),('2027-02-15','2027-02-19','February half-term'),('2027-03-22','2027-04-02','Easter'),('2027-05-31','2027-06-04','May half-term')]:
+    add(a,b,name+' school break','UK (England)','Leicester City maintained/voluntary-controlled schools',LE)
+# Summary ranges only for comparable named periods with dated components.
+# They describe the sampled regions, never nationwide closures.
+for market in ['UK (England)','Germany','Netherlands','Belgium']:
+    periods={}
+    for r in list(rows):
+        if r['market']==market and r['type']=='school holiday' and 'school break' in r['event'] and r['date_from']!='not_returned' and r['date_to']!='not_returned':
+            periods.setdefault(r['event'],[]).append(r)
+    for event,parts in periods.items():
+        if len({r['region'] for r in parts})<2:continue
+        add(min(r['date_from'] for r in parts),max(r['date_to'] for r in parts),event+' range',market,'Sample: '+'; '.join(r['region'] for r in parts),' | '.join(sorted({r['source'] for r in parts})),status='provisional' if any(r['status']=='provisional' for r in parts) else 'confirmed',notes='range: earliest start/latest end across listed regions only; intervening dates are not necessarily holidays everywhere; not a complete national census')
 
 
 def main():
